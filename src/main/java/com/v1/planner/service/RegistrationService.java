@@ -30,7 +30,5 @@ public class RegistrationService {
         registrationRepository.deleteById(id);
     }
 
-    public String getRegistration() {
-        return "Registration Service Response";
-    }
+    
 }

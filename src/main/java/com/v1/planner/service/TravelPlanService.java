@@ -1,10 +1,19 @@
 package com.v1.planner.service;
 
+import com.v1.planner.dto.TravelPlanRequest;
 import com.v1.planner.entity.TravelPlan;
 import com.v1.planner.repository.TravelPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +21,9 @@ import java.util.Optional;
 public class TravelPlanService {
     @Autowired
     private TravelPlanRepository travelPlanRepository;
+
+    @Value("${upload.path}")
+    private String uploadDir;
 
     public List<TravelPlan> getAllTravelPlans() {
         return travelPlanRepository.findAll();
@@ -21,7 +33,32 @@ public class TravelPlanService {
         return travelPlanRepository.findById(id);
     }
 
-    public TravelPlan saveTravelPlan(TravelPlan travelPlan) {
+    public TravelPlan createTravelPlan(TravelPlanRequest travelPlanRequest, List<MultipartFile> files) throws IOException {
+        List<String> filePaths = new ArrayList<>();
+
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Create directory if it doesn't exist
+        }
+
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                String filePath = Paths.get(uploadDir, fileName).toString();
+                System.out.println("/////////////////"+filePath+"    "+fileName);
+                Files.write(Path.of(filePath), file.getBytes());
+                filePaths.add(filePath);
+            }
+        }
+
+        TravelPlan travelPlan = new TravelPlan();
+        travelPlan.setDestination(travelPlanRequest.getDestination());
+        travelPlan.setStartDate(travelPlanRequest.getStartDate());
+        travelPlan.setEndDate(travelPlanRequest.getEndDate());
+        travelPlan.setDescription(travelPlanRequest.getDescription());
+        travelPlan.setPhotos(filePaths);
+
         return travelPlanRepository.save(travelPlan);
     }
 

@@ -4,15 +4,14 @@ import com.v1.planner.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Collection;
 import java.util.List;
-
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class User{
 
@@ -35,10 +34,6 @@ public class User{
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    
-    
-
 
     // Default constructor
 

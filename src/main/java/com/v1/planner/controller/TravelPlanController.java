@@ -1,17 +1,22 @@
 package com.v1.planner.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.v1.planner.dto.TravelPlanRequest;
 import com.v1.planner.entity.TravelPlan;
 import com.v1.planner.service.TravelPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+
 @RequestMapping("/api/travel-plans")
 public class TravelPlanController {
     @Autowired
@@ -29,20 +34,30 @@ public class TravelPlanController {
         return travelPlan.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<TravelPlan> createTravelPlan(@RequestBody TravelPlan travelPlan) {
-        TravelPlan savedTravelPlan = travelPlanService.saveTravelPlan(travelPlan);
-        return ResponseEntity.ok(savedTravelPlan);
-    }
+    // @PostMapping
+    // public ResponseEntity<TravelPlan> createTravelPlan(@RequestBody TravelPlan travelPlan) {
+    //     TravelPlan savedTravelPlan = travelPlanService.saveTravelPlan(travelPlan);
+    //     return ResponseEntity.ok(savedTravelPlan);
+    // }
 
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TravelPlan> createPlan(
-            @RequestPart("travelPlan") TravelPlanRequest travelPlanRequest,
-            @RequestPart("files") List<MultipartFile> files) throws IOException {
+            @RequestParam("travelPlan") String travelPlanJson,
+            @RequestParam("files") List<MultipartFile> files) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules(); // Auto-registers modules including jsr310
+        TravelPlanRequest travelPlanRequest = objectMapper.readValue(travelPlanJson, TravelPlanRequest.class);
+
+
+
 
         TravelPlan travelPlan = travelPlanService.createTravelPlan(travelPlanRequest, files);
+
         return ResponseEntity.ok(travelPlan);
     }
+
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<TravelPlan> updateTravelPlan(@PathVariable Long id, @RequestBody TravelPlan travelPlan) {

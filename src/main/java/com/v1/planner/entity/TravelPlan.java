@@ -30,6 +30,4 @@ public class TravelPlan {
     @ManyToMany(mappedBy = "travelPlans")
     private List<User> users;
 
-    // Default constructor
-
 }

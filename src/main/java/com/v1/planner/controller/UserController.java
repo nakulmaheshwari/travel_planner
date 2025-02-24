@@ -30,8 +30,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
-        System.out.println(savedUser.getFirstName());
-//        System.out.println(savedUser.getEmail());
+        //System.out.println(savedUser.getFirstName());
+      //        System.out.println(savedUser.getEmail());
         return ResponseEntity.ok(savedUser);
     }
 
