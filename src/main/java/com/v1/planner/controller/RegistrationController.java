@@ -15,6 +15,7 @@ public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
 
+
     @GetMapping
     public ResponseEntity<List<Registration>> getAllRegistrations() {
         List<Registration> registrations = registrationService.getAllRegistrations();
