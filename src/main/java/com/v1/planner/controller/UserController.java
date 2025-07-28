@@ -2,18 +2,24 @@ package com.v1.planner.controller;
 
 import com.v1.planner.entity.User;
 import com.v1.planner.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -28,10 +34,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.saveUser(user);
-        System.out.println(savedUser.getFirstName());
-//        System.out.println(savedUser.getEmail());
+        //System.out.println(savedUser.getFirstName());
+      //        System.out.println(savedUser.getEmail());
         return ResponseEntity.ok(savedUser);
     }
 
